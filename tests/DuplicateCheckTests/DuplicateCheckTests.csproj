@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AssemblyName>DuplicateCheckTests</AssemblyName>
+    <RootNamespace>DuplicateCheckTests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Test the pure logic straight from src, without the WinForms UI. -->
+    <Compile Include="..\..\src\DuplicateCheck.cs" Link="DuplicateCheck.cs" />
+    <Compile Include="..\..\src\AudioFileSearch.cs" Link="AudioFileSearch.cs" />
+    <Compile Include="..\..\src\AudioPreviewPlayer.cs" Link="AudioPreviewPlayer.cs" />
+    <Compile Include="..\..\src\YouTubeUrl.cs" Link="YouTubeUrl.cs" />
+    <Compile Include="..\..\src\AppPaths.cs" Link="AppPaths.cs" />
+    <Compile Include="..\..\src\YtDlpRunner.cs" Link="YtDlpRunner.cs" />
+    <!-- Cookie logic (offline parts): arg construction, decision seams, jar
+         analysis/clear. DiagnosticSanitizer because CookieStore uses it,
+         DiagLog because CookieStore/YtDlpRunner write sanitized diagnostics. -->
+    <Compile Include="..\..\src\CookieStore.cs" Link="CookieStore.cs" />
+    <Compile Include="..\..\src\BrowserCookies.cs" Link="BrowserCookies.cs" />
+    <Compile Include="..\..\src\DiagnosticSanitizer.cs" Link="DiagnosticSanitizer.cs" />
+    <Compile Include="..\..\src\DiagLog.cs" Link="DiagLog.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NAudio" Version="3.3.0" />
+  </ItemGroup>
+
+
+</Project>

@@ -1,0 +1,31 @@
+# .NET build output
+[Bb]in/
+[Oo]bj/
+.vs/
+
+# Local screenshots and generated working files
+Assets/_shot_full.png
+*.tmp
+*.bak
+
+# Local settings and generated diagnostics
+settings.ini
+settings.local.ini
+*.log
+*.binlog
+
+# Local portable distribution and release archives
+# Keep these out of Git history; publish the ZIP separately on GitHub Releases.
+dist/
+Release/
+
+# Visual Studio / Windows user-specific files
+*.user
+*.suo
+*.userprefs
+*.csproj.user
+*.sln.docstates
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
