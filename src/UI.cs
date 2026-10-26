@@ -16,6 +16,11 @@ namespace DownloadSearchAudio
         public static GraphicsPath RoundedRect(Rectangle r, int radius)
         {
             GraphicsPath p = new GraphicsPath();
+            // Handle invalid/zero-size rectangles (e.g., during minimize/restore)
+            if (r.Width <= 0 || r.Height <= 0)
+            {
+                return p; // Return empty path - nothing to draw
+            }
             if (radius <= 0)
             {
                 p.AddRectangle(r);
@@ -147,6 +152,11 @@ namespace DownloadSearchAudio
 
         private void UpdateRegion()
         {
+            if (Width <= 0 || Height <= 0)
+            {
+                // Cannot create a valid region for zero/negative size; skip until valid dimensions
+                return;
+            }
             Region old = Region;
             using (GraphicsPath p = UiGraphics.RoundedRect(new Rectangle(0, 0, Width, Height), Radius))
                 Region = new Region(p);
@@ -156,6 +166,7 @@ namespace DownloadSearchAudio
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
+            if (Width <= 1 || Height <= 1) return;
             using (GraphicsPath p = UiGraphics.RoundedRect(new Rectangle(0, 0, Width - 1, Height - 1), Radius))
             using (Pen pen = new Pen(Theme.Border, 1f))
                 e.Graphics.DrawPath(pen, p);
@@ -353,6 +364,7 @@ namespace DownloadSearchAudio
         protected override void OnPaint(PaintEventArgs e)
         {
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            if (Width < 7 || Height < 7) return; // Minimum size for 6-radius rounded rect
             Rectangle bounds = new Rectangle(1, 1, Width - 3, Height - 3);
             if (_hover || Focused)
             {
@@ -419,6 +431,7 @@ namespace DownloadSearchAudio
         protected override void OnPaint(PaintEventArgs e)
         {
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            if (Width <= 1 || Height <= 1) return;
             Rectangle r = new Rectangle(0, 0, Width - 1, Height - 1);
             using (GraphicsPath p = UiGraphics.RoundedRect(r, 10))
             using (SolidBrush b = new SolidBrush(Theme.GreenSoft))
@@ -527,6 +540,7 @@ namespace DownloadSearchAudio
         protected override void OnPaint(PaintEventArgs e)
         {
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            if (Width <= 1 || Height <= 1) return;
             Rectangle r = new Rectangle(0, 0, Width - 1, Height - 1);
             Color back = Enabled ? Back : (_style == StyleGhost ? Color.Transparent : Theme.Input);
             using (GraphicsPath p = UiGraphics.RoundedRect(r, 8))
@@ -664,6 +678,11 @@ namespace DownloadSearchAudio
         protected override void OnResize(EventArgs eventargs)
         {
             base.OnResize(eventargs);
+            if (Width <= 0 || Height <= 0)
+            {
+                Invalidate();
+                return;
+            }
             Region old = Region;
             using (GraphicsPath p = UiGraphics.RoundedRect(new Rectangle(0, 0, Width, Height), 8))
                 Region = new Region(p);
@@ -674,6 +693,7 @@ namespace DownloadSearchAudio
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
+            if (Width <= 1 || Height <= 1) return;
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             using (GraphicsPath p = UiGraphics.RoundedRect(new Rectangle(0, 0, Width - 1, Height - 1), 8))
             using (Pen pen = new Pen(Theme.Border, 1f))
@@ -720,6 +740,7 @@ namespace DownloadSearchAudio
         protected override void OnPaint(PaintEventArgs e)
         {
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            if (Width <= 1 || Height <= 1) return;
             Rectangle r = new Rectangle(0, 0, Width - 1, Height - 1);
             using (GraphicsPath p = UiGraphics.RoundedRect(r, 4))
             using (SolidBrush track = new SolidBrush(Theme.Input))
@@ -793,6 +814,7 @@ namespace DownloadSearchAudio
         protected override void OnPaint(PaintEventArgs e)
         {
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            if (Width <= 1 || Height <= 1) return;
             Rectangle r = new Rectangle(0, 0, Width - 1, Height - 1);
             using (GraphicsPath p = UiGraphics.RoundedRect(r, 8))
             {
@@ -937,6 +959,10 @@ namespace DownloadSearchAudio
         protected override void OnResize(EventArgs eventargs)
         {
             base.OnResize(eventargs);
+            if (Width <= 0 || Height <= 0)
+            {
+                return;
+            }
             Region old = Region;
             using (GraphicsPath p = UiGraphics.RoundedRect(new Rectangle(0, 0, Width, Height), 8))
                 Region = new Region(p);
@@ -946,6 +972,7 @@ namespace DownloadSearchAudio
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
+            if (Width <= 1 || Height <= 1) return;
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             using (GraphicsPath p = UiGraphics.RoundedRect(new Rectangle(0, 0, Width - 1, Height - 1), 8))
             using (Pen pen = new Pen(Theme.Border, 1f))

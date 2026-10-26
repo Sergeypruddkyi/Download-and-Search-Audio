@@ -427,6 +427,38 @@
 - [ ] **T6.4 TODO** Финальный запуск и проверка; обновление дорожной карты;
   итоговый отчёт.
 
+## Исправление: Parameter is not valid при сворачивании/восстановлении (2026-10-26)
+
+- [x] **T6.x DONE** Исправлено исключение `System.ArgumentException: Parameter is not valid.`
+  в `UiGraphics.RoundedRect` при сворачивании окна в трей и восстановлении.
+
+  **Причина**: При сворачивании/восстановлении окна WinForms временно устанавливает
+  контролам нулевые или отрицательные размеры (Width/Height <= 0). Метод
+  `UiGraphics.RoundedRect` не проверял эти граничные случаи и передавал
+  некорректные прямоугольники в `GraphicsPath.AddArc`, что вызывало исключение GDI+.
+
+  **Исправления в `src\UI.cs`**:
+  1. `UiGraphics.RoundedRect(Rectangle, int)` — добавлена ранняя проверка
+     `if (r.Width <= 0 || r.Height <= 0) return p;` (пустой путь).
+  2. `Card.UpdateRegion()` — пропуск создания региона при `Width <= 0 || Height <= 0`.
+  3. `InputBox.OnResize()` — пропуск создания региона при некорректных размерах.
+  4. `ComboPopup.OnResize()` — пропуск создания региона при некорректных размерах.
+  5. Все `OnPaint` методы (Card, InputBox, AudioTransportButton, IconChip,
+     RoundedButton, ProgressLite, DarkCombo, SearchResultsViewport.scrollbar) —
+     добавлена ранняя проверка `if (Width <= 1 || Height <= 1) return;` (или
+     аналогичная) перед построением геометрии.
+
+  **Проверки**:
+  - Release build: 0 предупреждений/ошибок.
+  - 66/66 офлайн-тестов PASS.
+  - Self-contained win-x64 publish в `dist\DownloadSearchAudio\` успешен.
+  - Автоматизированные GUI-тесты: 10 циклов свернуть/восстановить через
+    `ShowWindow(SW_MINIMIZE/SW_RESTORE)` — без исключений.
+  - 20 быстрых изменений размеров окна — без исключений.
+  - Изменение размера в свёрнутом состоянии с последующим восстановлением —
+    без исключений.
+  - Процесс закрыт штатно (PID 10776, путь сверен).
+
 ## Текущая точка остановки
 
 - Дата: 2026-10-26.
@@ -445,6 +477,11 @@
   **Восстановлен стандартный системный Folder Picker** (T3.8) вместо
   `DarkBrowseDialog` — при нажатии "Change Folder" и клике в "Save to"
   открывается штатный `FolderBrowserDialog` Windows.
+- **ИСПРАВЛЕНО**: Исключение `Parameter is not valid` при сворачивании/восстановлении
+  окна (T6.x). Исправлен `UiGraphics.RoundedRect` и все места вызова
+  (`Card`, `InputBox`, `ComboPopup`, `AudioTransportButton`, `IconChip`,
+  `RoundedButton`, `ProgressLite`, `DarkCombo`, `SearchResultsViewport`) —
+  добавлены проверки нулевых/отрицательных размеров.
 - Новые файлы: `src\YtDlpRunner.cs`, `src\YouTubeUrl.cs`, `src\DuplicateCheck.cs`,
   `src\Dialogs.cs`, `src\CookieStore.cs`, `src\BrowserCookies.cs`,
   `src\CookiesDialog.cs`, `src\DiagnosticSanitizer.cs`, `src\DiagLog.cs`,
@@ -459,9 +496,11 @@
   (`dist\DownloadSearchAudio\DownloadSearchAudio.exe` + yt/deno/ffmpeg/ffprobe)
   проверена реальными запусками, скачиванием и скриншот-проверкой иконки;
   тестовые экземпляры закрыты штатно, PID и пути сверялись.
-- Последнее изменение: T3.8 — восстановлен стандартный Windows Folder Picker.
+- Последнее изменение: T6.x — исправление `Parameter is not valid` при
+  сворачивании/восстановлении окна.
   Release build (0 warnings/errors), 66/66 тестов PASS, publish успешен,
-  EXE проверен внизу справа с отступами 16px.
+  EXE проверен: 10 циклов минимизация/восстановление, 20 resize-операций,
+  resize в минимизированном состоянии — исключений нет, процесс закрыт штатно.
 - Следующая задача — Этап 4: Duplicate Warning (T4.1–T4.3) — сопоставление
   названия из YouTube с файлами коллекции, диалог предупреждения, проверка на
   dist-сборке.
